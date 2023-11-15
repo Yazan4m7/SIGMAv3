@@ -1,6 +1,8 @@
 import 'package:app/firebase_options.dart';
 import 'package:app/screens/account_statement.dart';
 import 'package:app/screens/cases_screen.dart';
+import 'package:app/utils/storage_service.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -15,16 +17,7 @@ import 'constants.dart';
    initializeFCM () async{
      FirebaseMessaging messaging = FirebaseMessaging.instance;
      await messaging.setAutoInitEnabled(true);
-    final fcmToken = await messaging.getToken();
-    print("n-token : $fcmToken");
-     RemoteServicesController.instance.setNotificationToken(fcmToken!);
-    FirebaseMessaging.instance.onTokenRefresh
-        .listen((fcmToken) {
-      RemoteServicesController.instance.setNotificationToken(fcmToken!);
-    })
-        .onError((err) {
-      print("Error getting fcm token");
-    });
+
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
@@ -35,9 +28,16 @@ import 'constants.dart';
       sound: true,
     );
 
-
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      String buttonText = "";
+      bool inBox=false;
+      if (message.data['title'].toString().contains("box") || message.data['body'].toString().contains("box"))
+        inBox=true;
+      if (message.data['click_action'] =="openCompletedCases")
+        buttonText= "Completed Cases";
+      else
+        buttonText= "Account Statement";
       print('Got a message whilst in the foreground!');
       print('Message data: ${message.data}');
       if (navigatorKey.currentContext != null) {
@@ -46,7 +46,8 @@ import 'constants.dart';
               return CustomDialogBox(
                 title: message.data['title'],
                 descriptions: message.data['body'],
-                text: message.data['click_action'] =="showInProgressCases" ? "View Cases" : "View Statement",
+                text: buttonText,
+                inBox: inBox,
               );
       });}
     });
@@ -57,22 +58,30 @@ import 'constants.dart';
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
      print("background messaging handler running .. message data : ${message.data}");
-
+     playSound();
 }
-void _handleMessage(RemoteMessage message) {
-  print("message opened, data : ${message.data}");
-     print("Context ${navigatorKey.currentContext}");
-  if (message.data["click_action"] == "openInProgressCases") {
+void _handleMessage(RemoteMessage message) async {
+     print("handling from FCM service");
+  if (message.data["click_action"] == "openCompletedCases") {
+    remoteServices.getCompletedCases();
+    remoteServices.getInProgressCases();
     Navigator.of(navigatorKey.currentContext!).push(SwipeablePageRoute(
-      builder: (BuildContext context) => const CasesScreen(),
+      builder: (BuildContext context) => const CasesScreen(tabIndex: 1,),
     ));
   }
-  if (message.data["click_action"] == "openNewPaymentDialog") {
+  if (message.data["click_action"] == "OpenAccountStatement") {
+    await remoteServices.getStatement();
     Navigator.of(navigatorKey.currentContext!).push(SwipeablePageRoute(
       builder: (BuildContext context) => const AccountStatementScreen(),
     ));
   }
-  }
+
+}
+
+void playSound() async{
+  final AudioPlayer player = AudioPlayer();
+  await player.play(AssetSource("sounds/notification.mp3"));
+}
 
 
 

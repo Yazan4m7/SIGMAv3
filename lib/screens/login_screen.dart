@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var receivedID = '';
   @override
   Widget build(BuildContext context) {
+    print("login screen build");
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -92,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
 
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.symmetric(vertical: 8.w,horizontal: 16.w),
           child: Obx(
             ()=> Text(
               authController.welcomeMsg.value,

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:jiffy/jiffy.dart';
 import '../models/AccountStatementEntry.dart';
 import '../models/case.dart';
+import '../utils/storage_service.dart';
 import 'auth_controller.dart';
 import 'package:app/utils/constants.dart';
 import 'package:app/models/client.dart';
@@ -26,6 +27,7 @@ class RemoteServicesController extends GetxController{
   List<GalleryMedia> galleryMedia = <GalleryMedia>[].obs;
   RxMap<String, List<AccountStatementEntry>> entries =<String, List<AccountStatementEntry>>{}.obs;
   Map<int, Employee> employees =<int, Employee>{};
+  Rx<bool> isAllMediaViewed = false.obs;
   @override
   void onReady() async{
     super.onReady();
@@ -54,6 +56,7 @@ class RemoteServicesController extends GetxController{
     print("client info set.");
     _fetchData();
     setAccessLevel();
+    setData("doctorId", client.value.id);
     return "null";
   }
   void setAccessLevel(){
@@ -61,6 +64,7 @@ class RemoteServicesController extends GetxController{
     if (client.value.phone!.contains(currentPhoneNum))
       isDoctorAccount.value = true;
     print("Doctor Account : ${isDoctorAccount.value}");
+    setData("accountType",isDoctorAccount.value);
   }
   Future<void> getOpeningBalance() async {
     var response = await http.post(Uri.parse(openingBalanceAddress),
@@ -162,20 +166,21 @@ class RemoteServicesController extends GetxController{
       employees[emp.id!] = emp;
     }
   }
-  void getGalleryItems() async {
+  Future<void> getGalleryItems() async {
     var response = await http.post(Uri.parse(getGalleryMediaAddress),
         body: {'phoneNum': encrypt(authController.phoneNumber)});
     List jsons = jsonDecode(response.body);
     for (var element in jsons) {
       GalleryMedia media = GalleryMedia.fromJson(element);
+      if (!galleryMedia.map((item) => item.id).contains(media.id))
       galleryMedia.add(media);
     }
+    checkIfAllMediaViewed();
   }
   void setNotificationToken(String token) async{
         var response =await http.post(Uri.parse(setNotificationTokenAddress),
         body: {'phoneNum': encrypt(authController.phoneNumber),
         "token":token});
-
-        print("Token updated, result : ${response.body}");
+        print("FCM Token updated, result : ${response.body}");
   }
 }

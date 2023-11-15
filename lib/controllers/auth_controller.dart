@@ -1,12 +1,15 @@
 import 'package:app/controllers/remote_services_controller.dart';
 import 'package:app/screens/home_screen.dart';
 import 'package:app/screens/login_screen.dart';
+import 'package:app/utils/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:intl/intl.dart';
 import '../models/client.dart';
+import 'package:http/http.dart' as http;
 
+import '../utils/constants.dart';
 class AuthController extends GetxController {
 static AuthController get instance => Get.find();
 
@@ -21,8 +24,8 @@ TextEditingController phoneTextFieldController = TextEditingController();
 TextEditingController otpTextFieldController = TextEditingController();
 
 @override
-  void onReady(){
-
+void onReady(){
+  print("auth controller on ready");
   firebaseUser = Rx<User?>(_auth.currentUser);
   firebaseUser.bindStream(_auth.userChanges());
   phoneNumber = firebaseUser.value?.phoneNumber ?? "null";
@@ -61,7 +64,15 @@ Future<bool> verifyOtp (String otp) async {
      credentials = await _auth.signInWithCredential(
         PhoneAuthProvider.credential(
             verificationId: verificationId.value, smsCode: otp));
+
+     if(credentials.user != null){
+       setData("phone",phoneNumber);
+
+       if(getString("loginTime") == null)
+       setData("loginTime",DateFormat('yMd').format(DateTime.now()));
+      }
   } catch(e){
+    print("Verification failed $e");
     welcomeMsg.value = "Phone Verification Failed, Please try again.";
     welcomeMsgColor = Colors.red;
   }
@@ -74,6 +85,7 @@ Future<bool> verifyOtp (String otp) async {
   return credentials.user != null ? true : false;
 }
 _setInitialScreen(User? user) async{
+  print("auth controller _setInitialScreen");
   if(isLoggedIn()) {
     print(" is logging out : $isLoggingOut");
     if (!isLoggingOut) {
@@ -93,14 +105,12 @@ _setInitialScreen(User? user) async{
     isLoggingOut = false;
   }
 }
-
 isLoggedIn(){
   if (FirebaseAuth.instance.currentUser != null) {
     return true;
   } else {
     return false;
   }}
-
 Future<void> logout() async {
   isLoggingOut = true;
   welcomeMsg.value ="Please enter your phone number";
@@ -109,6 +119,20 @@ Future<void> logout() async {
 
 }
 
+Future<void> removeNotificationToken(int accountType)async {
+  int? docId = getInt("doctorId");
+  if (docId == null)
+    docId = remoteServices.client.value.id;
+  if (docId !=null){
+    var response =await http.post(Uri.parse(removeTokenAddress),body: {
+      'docId' : docId.toString(),
+      "accountType" : accountType.toString()
+    });
+    print("removed notification token, doc id  : $docId, response :${response.body} ");
+  }
+
+
+}
 
 
 }

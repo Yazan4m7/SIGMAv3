@@ -4,10 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../controllers/remote_services_controller.dart';
 import '../utils/constants.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../utils/local_auth_service.dart';
+
 
 class CasesScreen extends StatefulWidget {
-  const CasesScreen({Key? key}) : super(key: key);
-
+  const CasesScreen({Key? key,this.tabIndex}) : super(key: key);
+  final int? tabIndex;
   @override
   State<CasesScreen> createState() => _CasesScreenState();
 }
@@ -24,15 +28,23 @@ class _CasesScreenState extends State<CasesScreen>
   
   @override
   void initState() {
-    super.initState();
+    checkAuthorization();
+    remoteServices.getCompletedCases();
+    remoteServices.getInProgressCases();
+
+
     _tabController = TabController(vsync: this, length: myTabs.length);
     _tabController?.addListener((){
       setState(() {
       });
     });
+    print("Tab index received : ${widget.tabIndex}");
+    if(widget.tabIndex !=null) {
+      _tabController?.animateTo(1);
+      print("animating to ${widget.tabIndex}");
+    }
 
-
-
+    super.initState();
   }
 
   @override
@@ -51,6 +63,10 @@ class _CasesScreenState extends State<CasesScreen>
           backgroundColor: Colors.transparent,
           centerTitle: true,
           title: const Text("CASES"),
+            actions: <Widget>[IconButton(onPressed: (){
+              remoteServices.getCompletedCases();
+              remoteServices.getInProgressCases();
+            }, icon: Icon(Icons.refresh_rounded))]
         ),
         body: Container(
           decoration:  BoxDecoration(
@@ -112,7 +128,17 @@ class _CasesScreenState extends State<CasesScreen>
                 ],
               ),
               SizedBox(height: 25.h),
-              Expanded(
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text("Delivery Date",style:TextStyle(color:Colors.white,fontSize: 16.sp))
+                      ,Text("Patient name",style:TextStyle(color:Colors.white,fontSize: 16.sp))],),
+                ),
+              )
+              ,Expanded(
                  //height: MediaQuery.of(context).size.height,
                 child: TabBarView(controller: _tabController, children: [
                   Obx(

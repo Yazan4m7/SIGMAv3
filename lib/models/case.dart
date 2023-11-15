@@ -19,7 +19,7 @@ class Case {
   Null? isRejected;
   int? containsModification;
   int? firstCaseIfRepeated;
-
+  int ? deliveredInBox;
   Case(
       {this.id,
         this.caseId,
@@ -40,7 +40,8 @@ class Case {
         this.isARemake,
         this.isRejected,
         this.containsModification,
-        this.firstCaseIfRepeated});
+        this.firstCaseIfRepeated,
+        this.deliveredInBox});
 
   Case.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -63,6 +64,7 @@ class Case {
     isRejected = json['is_rejected'];
     containsModification = json['contains_modification'];
     firstCaseIfRepeated = json['first_case_if_repeated'];
+    deliveredInBox = json['delivered_in_box'];
   }
 
   Map<String, dynamic> toJson() {
@@ -87,6 +89,7 @@ class Case {
     data['is_rejected'] = this.isRejected;
     data['contains_modification'] = this.containsModification;
     data['first_case_if_repeated'] = this.firstCaseIfRepeated;
+    data['delivered_in_box'] = this.deliveredInBox;
     return data;
   }
 }

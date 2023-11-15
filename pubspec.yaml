@@ -45,7 +45,7 @@ dependencies:
   flutter_svg: ^2.0.5
   encrypt:
   http:
-  jiffy: ^6.1.0
+  jiffy: 6.0.0
   swipeable_page_route: ^0.3.0
   package_info_plus: any
   percent_indicator: ^4.0.1
@@ -55,6 +55,14 @@ dependencies:
   firebase_messaging: ^14.6.7
   flutter_local_notifications: ^15.1.1
   audioplayers: ^5.1.0
+  shimmer: ^3.0.0
+  get_storage: ^2.1.1
+  intl: ^0.18.0
+  syncfusion_flutter_datagrid: ^23.1.44
+  getwidget: ^4.0.0
+  #syncfusion_flutter_charts: ^23.1.42
+  flutter_charts: 0.5.2
+  syncfusion_flutter_gauges: ^23.1.44
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -92,6 +100,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/sounds/
+    - assets/images/gifs/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

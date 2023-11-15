@@ -16,6 +16,9 @@ Color kAccountStatementForegroundColor= const Color(0xfffff9f9);
 Color kCasesForegroundColor= const Color(0xfffff9f9);
 Color kAccountStatementTileBGColor = const Color(0x3de5e5e5);
 Color kCasesTileBGColor = const Color(0x3de5e5e5);
+
+
+
 String fontFamily = 'Quest';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -34,4 +37,5 @@ String getEmployeesAddress = "$ipAddress/api/get-employees";
 String checkIfPhoneExistsAddress = "$ipAddress/api/check-if-phone-exists";
 String getGalleryMediaAddress = "$ipAddress/api/get-gallery-items";
 String setNotificationTokenAddress = "$ipAddress/api/set-notification-token";
+String removeTokenAddress = "$ipAddress/api/remove-token";
 

@@ -1,15 +1,13 @@
 import 'package:app/screens/login_screen.dart';
 import 'package:app/utils/FCM_Service.dart';
 import 'package:app/utils/constants.dart';
-import 'package:app/utils/local_notification_service.dart';
 import 'package:app/utils/main_bindings.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'controllers/auth_controller.dart';
 import 'firebase_options.dart';
+import 'package:get_storage/get_storage.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +15,7 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform,
   );/*.then((value) => Get.put(AuthController()));*/
   initializeFCM();
-
+  await GetStorage.init();
   // await setupLocalNotification();
   runApp(const SigmaApplication());
 

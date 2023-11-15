@@ -7,6 +7,7 @@ import '../controllers/auth_controller.dart';
 import '../controllers/remote_services_controller.dart';
 import '../utils/constants.dart';
 import '../utils/encrypt.dart';
+import '../utils/local_auth_service.dart';
 import '../widgets/account_statement_tile.dart';
 import 'package:get/get.dart';
 
@@ -24,19 +25,31 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
   double? openingBalance;
   bool isLoadingOpeningBalance = true;
   bool isLoadingAccountStatement = true;
+  bool scrolledDown = false;
   NumberFormat formatter = NumberFormat.decimalPatternDigits(
     locale: 'en_us',
     decimalDigits: 0,
   );
+
+  @override
+  void initState() {
+    remoteServices.getStatement();
+    checkAuthorization();
+    super.initState();
+  }
   void _scrollDown() {
+    if(!scrolledDown){
     Future.delayed(Duration(seconds: 1)).then((value) {
       print("scrolling down");
+      if(_scrollController.positions.isNotEmpty)
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
       duration: Duration(milliseconds: 800),
       curve: Curves.fastOutSlowIn,
     );
     });
+    scrolledDown = true;
+    }
   }
 
 
@@ -81,6 +94,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
                                     double balance = double.parse(
                                         remoteServices.openingBalance.value);
                                     remoteServices.previousMonth();
+                                    scrolledDown = false;
                                     _scrollDown();
                                   },
                                   icon: const Icon(
@@ -102,6 +116,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
                                   : IconButton(
                                       onPressed: () {
                                         remoteServices.nextMonth();
+                                        scrolledDown = false;
                                         _scrollDown();
                                       },
                                       icon: const Icon(
@@ -164,7 +179,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
             ),
 
             Positioned.fill(
-              top: 180.h,
+              top: 200.h,
               child: Column(children: [
                 SizedBox(height: 5.h),
                 Container(
@@ -220,6 +235,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
                                 ],
                               ));
                         }
+                        if(!scrolledDown)
                         if (remoteServices
                             .entries[remoteServices.date.value.yM] !=
                             null && index == 4) {
