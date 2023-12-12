@@ -1,0 +1,142 @@
+import 'package:app/utils/constants.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
+
+class QualityControlPerformance extends StatefulWidget {
+  const QualityControlPerformance({Key? key}) : super(key: key);
+
+  @override
+  State<QualityControlPerformance> createState() =>
+      _QualityControlPerformanceState();
+}
+
+class _QualityControlPerformanceState extends State<QualityControlPerformance> {
+  @override
+  Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.white30,
+        body: Column(children: [
+          SizedBox(height: 35.h,),
+          Padding(
+            padding:
+            const EdgeInsets.only(top: 25.0, left: 18.0, right: 18.0),
+            child: Text(
+              "QUALITY CONTROL",
+              style: TextStyle(
+                  color: Colors.black.withOpacity(0.8),
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+
+      SizedBox(
+        height: mediaQuery.height / 2.1 - 90,
+        width: mediaQuery.width ,
+        child: SfRadialGauge(
+          // title: GaugeTitle(text: "81%",alignment: GaugeAlignment.values[1]),
+            enableLoadingAnimation: true, animationDuration: 2000,
+            axes: <RadialAxis>[
+      RadialAxis(
+
+        labelFormat: "{value}%",
+        startAngle: 180,
+        endAngle: 0,
+        interval: 10,
+        canScaleToFit: true,
+        pointers: <GaugePointer>[
+
+          RangePointer(value: 81.3, width: 0.2,
+            color: Colors.green,
+            sizeUnit: GaugeSizeUnit.factor
+        ),NeedlePointer(value: 81.3,)
+        ],
+        axisLineStyle: AxisLineStyle(
+          thickness: 0.2,
+          thicknessUnit: GaugeSizeUnit.factor,
+         color: Colors.red),
+      )]),
+      ),
+      Text("81%",style: TextStyle(fontSize: 30.sp,fontWeight: FontWeight.w700,color: kGreen),),
+      SizedBox(height: 25.h,),
+      Expanded(
+        child: Column(
+
+              children:[
+                SizedBox(height: 100.h,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      Row(
+                        children: [
+                          Text(
+                            String.fromCharCode(CupertinoIcons.check_mark.codePoint),
+                            style: TextStyle(
+                              inherit: false,
+                              color: Colors.green,
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: CupertinoIcons.check_mark.fontFamily,
+                              package: CupertinoIcons.check_mark.fontPackage,
+                            ),
+                          ),
+                          SizedBox(width: 10.w,),
+                          Text("SUCCESSFUL",style: TextStyle(color: Colors.black,fontSize: 19.sp,fontWeight:FontWeight.w600),)
+                        ],
+                      ),
+                      SizedBox(height:10.h),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text("61 ",style: TextStyle(color: Colors.green,fontSize: 27.sp,fontWeight: FontWeight.w700),),
+                          Text("UNITS",style: TextStyle(color: Colors.black54,fontSize: 20.sp),),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10.h,),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            String.fromCharCode(CupertinoIcons.repeat.codePoint),
+                            style: TextStyle(
+                              inherit: false,
+                              color: Colors.red,
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: CupertinoIcons.check_mark.fontFamily,
+                              package: CupertinoIcons.check_mark.fontPackage,
+                            ),
+                          ),
+                          SizedBox(width: 10.w,),
+                          Text("REPEATED",style: TextStyle(color: Colors.black,fontSize: 19.sp,fontWeight:FontWeight.w600),)
+                        ],
+                      ),
+                      SizedBox(height:10.h),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text("14 ",style: TextStyle(color: Colors.red,fontSize: 27.sp,fontWeight: FontWeight.w700),),
+                          Text("UNITS",style: TextStyle(color: Colors.black54,fontSize: 20.sp),),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+
+        ]),
+      ),
+    ]));
+  }
+}

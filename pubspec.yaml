@@ -63,6 +63,11 @@ dependencies:
   #syncfusion_flutter_charts: ^23.1.42
   flutter_charts: 0.5.2
   syncfusion_flutter_gauges: ^23.1.44
+  syncfusion_flutter_charts: ^23.1.44
+  persistent_bottom_nav_bar: ^5.0.2
+  loading_animation_widget: ^1.2.0+4
+  simple_animations: 3.0.0
+  page_transition: 2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

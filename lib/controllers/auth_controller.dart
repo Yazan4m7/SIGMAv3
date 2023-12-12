@@ -1,6 +1,7 @@
 import 'package:app/controllers/remote_services_controller.dart';
 import 'package:app/screens/home_screen.dart';
 import 'package:app/screens/login_screen.dart';
+import 'package:app/screens/welcome_screen.dart';
 import 'package:app/utils/storage_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,7 @@ _setInitialScreen(User? user) async{
       Get.offAll(() => const LoginScreen());
     } else {
       print("Client name is not null.");
-      Get.offAll(() => const HomeScreen());
+      Get.offAll(() => const WelcomeScreen());
     }
     isLoggingOut = false;
   }

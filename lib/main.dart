@@ -1,4 +1,5 @@
 import 'package:app/screens/login_screen.dart';
+import 'package:app/screens/welcome_screen.dart';
 import 'package:app/utils/FCM_Service.dart';
 import 'package:app/utils/constants.dart';
 import 'package:app/utils/main_bindings.dart';
@@ -37,10 +38,18 @@ class _SigmaApplicationState extends State<SigmaApplication> {
     splitScreenMode: true,
     builder: (context , child) {
       return  GetMaterialApp(
+          theme: ThemeData(
+              pageTransitionsTheme: PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                  }
+              )
+          ),
         initialBinding: MainBindings(),
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey,
-        home: const LoginScreen()
+        home: LoginScreen()
       );
     }
     );

@@ -1,4 +1,5 @@
-import 'package:app/screens/performance_screen.dart';
+import 'package:app/screens/performance/performance_loading_screen.dart';
+import 'package:app/screens/performance/units_count_performance.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:app/controllers/auth_controller.dart';
@@ -14,6 +15,7 @@ import 'package:swipeable_page_route/swipeable_page_route.dart';
 import 'package:app/models/client.dart';
 import 'package:app/utils/storage_service.dart';
 import 'gallery_screen.dart';
+import 'performance/performance_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -96,20 +98,25 @@ print("handling notification from home screen");
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+
         elevation: 0,
         foregroundColor: kWhite,
         backgroundColor: Colors.transparent,
-        title: Text("", style: TextStyle(fontFamily: fontFamily)),
-        centerTitle: true,
         actions: <Widget>[
           PopupMenuButton(
+
               // add icon, by default "3 dot" icon
-              // icon: Icon(Icons.book)
+              icon: Icon(Icons.account_circle_rounded,color: Colors.white70,),
+              iconSize: 40.w,
               itemBuilder: (context) {
             return [
+              PopupMenuItem<int>(padding: EdgeInsets.only(left: 30.w,right: 0),value: 0, child:_buildClientName(),),
+              PopupMenuItem<int>(height:2.h,value: 0, child:Container(color: Colors.black54,height: 1.h,)),
               PopupMenuItem<int>(
                 value: 1,
-                child: Text("Logout"),
+                child: Text("Logout",style: TextStyle(fontSize: 22.sp,
+                    color: Colors.black,
+                    fontFamily: 'Quest'),textAlign: TextAlign.start,),
               ),
             ];
           }, onSelected: (value) {
@@ -128,12 +135,30 @@ print("handling notification from home screen");
         ),
         child: Stack(
           children: [
+            // Positioned(
+            //     right: 45.w,
+            //     top: 29.h,
+            //     child: _buildClientName()),
             Column(
               children: [
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      " د. ",
+                      style: TextStyle(
+                        fontSize: 25.sp,
+                        color: Colors.transparent,
+                        fontFamily: 'Quest',
+                      ),
+                    )
+                  ],
+                ),
                 SizedBox(height: 140.h),
                 _buildLogo(),
-                SizedBox(height: 60.h),
-                _buildClientName(),
+                 SizedBox(height: 100.h),
+                 //_buildClientName(),
                 SizedBox(height:50.h),
                 _buildCasesBtn(),
                 SizedBox(height: 25.h),
@@ -175,7 +200,7 @@ print("handling notification from home screen");
         " د. " + (remoteServices.client.value.name ?? ""),
         style: TextStyle(
           fontSize: 25.sp,
-          color: Colors.white,
+          color: Colors.black,
           fontFamily: 'Quest',
         ),
       ),
@@ -315,7 +340,7 @@ print("handling notification from home screen");
                 ),
                 onPressed: () {
                   Navigator.of(context).push(SwipeablePageRoute(
-                    builder: (BuildContext context) =>  PerformanceScreen(),
+                    builder: (BuildContext context) =>  PerformanceLoadingScreen(),
                   ));
                 },
                 child: Text(

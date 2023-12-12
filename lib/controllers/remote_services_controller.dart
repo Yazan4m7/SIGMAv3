@@ -13,6 +13,7 @@ import 'package:app/models/client.dart';
 import 'dart:convert';
 import 'package:app/models/job.dart';
 import '../models/employee.dart';
+import 'package:flutter/foundation.dart';
 class RemoteServicesController extends GetxController{
   static RemoteServicesController get instance => Get.find();
   final authController = Get.find<AuthController>();
@@ -42,7 +43,6 @@ class RemoteServicesController extends GetxController{
   }
   Future<String> getClient() async{
     print("get client");
-    var encrytpedPhoneNum = encrypt (authController.phoneNumber);
     var response =await http.post(Uri.parse(clientInfoAddress),body: {'phoneNum' : encrypt(authController.phoneNumber)
     });
     if(response.statusCode == 403) {
@@ -80,12 +80,22 @@ class RemoteServicesController extends GetxController{
     var response = await http.post(Uri.parse(accountStatementAddress),
         body: {'phoneNum': encrypt(authController.phoneNumber),
           'month' : "${date.value.year}-${date.value.month}"});
-    // try {
-      Map jsons = jsonDecode(response.body);
+
+
+      var jsons = jsonDecode(response.body);
+    if(kDebugMode) {
+      print(encrypt(authController.phoneNumber));
+      print(jsonDecode(response.body));
+      print(jsons.runtimeType);
+    }
+    if(jsons is Map)
+      jsons = jsons.values;
+
+
       entries[date.value.yM] = [];
       double balance= double.parse(openingBalance.value);
 
-      for (var element in jsons.values) {
+      for (var element in jsons) {
         AccountStatementEntry ASE = AccountStatementEntry.fromJson(element);
         if (ASE.status == 1) {
           balance += ASE.amount ?? 0;
@@ -94,7 +104,6 @@ class RemoteServicesController extends GetxController{
         }
         ASE.balance = balance;
         entries[date.value.yM]?.add(ASE);
-
       }
 
     // }catch(e){
