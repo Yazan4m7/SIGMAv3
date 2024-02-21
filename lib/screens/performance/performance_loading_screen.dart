@@ -35,30 +35,30 @@ class _PerformanceLoadingScreenState extends State<PerformanceLoadingScreen>
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image:
-                      AssetImage("assets/images/gifs/performance_bg.gif"),
+                      AssetImage("assets/images/gifs/performance_bg2.gif"),
                       opacity: 1,
                       fit: BoxFit.fitHeight,
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                top: 95,
-                right:155,
-                child: Container(
-                  width: 50.w,
-                  height: 60.h,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image:
-                      AssetImage("assets/images/logo_small.png"),
-
-                      opacity: 0.7,
-                      fit: BoxFit.fitHeight,
-                    ),
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: 95,
+              //   right:155,
+              //   child: Container(
+              //     width: 50.w,
+              //     height: 60.h,
+              //     decoration: BoxDecoration(
+              //       image: DecorationImage(
+              //         image:
+              //         AssetImage("assets/images/logo_small.png"),
+              //
+              //         opacity: 0.7,
+              //         fit: BoxFit.fitHeight,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               Positioned.fill(
                   top: 280.h,
                   child: Container(

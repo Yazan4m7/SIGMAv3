@@ -22,7 +22,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
   final authController = Get.find<AuthController>();
   final remoteServices = Get.find<RemoteServicesController>();
   final ScrollController _scrollController = ScrollController();
-  double? openingBalance;
+  double? openingBalance = 0;
   bool isLoadingOpeningBalance = true;
   bool isLoadingAccountStatement = true;
   bool scrolledDown = false;
@@ -40,7 +40,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
   void _scrollDown() {
     if(!scrolledDown){
     Future.delayed(Duration(seconds: 1)).then((value) {
-      print("scrolling down");
+
       if(_scrollController.positions.isNotEmpty)
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
@@ -55,6 +55,7 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     double balance = double.parse(remoteServices.openingBalance.value);
 
     return Scaffold(
@@ -182,77 +183,79 @@ class _AccountStatementScreenState extends State<AccountStatementScreen> {
               top: 200.h,
               child: Column(children: [
                 SizedBox(height: 5.h),
-                Container(
-                  height: 550.h,
-                  child: Obx(
-                    () => ListView.builder(
-                      controller: _scrollController,
-                      itemCount: remoteServices
-                                  .entries[remoteServices.date.value.yM] ==
-                              null
-                          ? 1
-                          : remoteServices
-                                  .entries[remoteServices.date.value.yM]!
-                                  .length +
-                              1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          balance =
-                              double.parse(remoteServices.openingBalance.value);
-                          return Container(
-                              margin: EdgeInsets.only(bottom:10.h,left:5.w,right:5.w),
-                              decoration:  BoxDecoration(
-                                  color: kAccountStatementTileBGColor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20))),
-                              width: 350.w,
-                              height: 60.h,
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                      top: 20.h,
-                                      left: 10.w,
-                                      child: Text(
-                                        "Opening Balance",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.sp,
-                                            color: kAccountStatementForegroundColor),
-                                      )),
-                                  Positioned(
-                                      top: 20.h,
-                                      right: 30.w,
-                                      child: Obx(
-                                        () => Text(
-                                          formatter.format(double.parse(remoteServices.openingBalance.value) ??
-                                              0),
+                Expanded(
+                  child: Container(
+                    height: 550.h,
+                    child: Obx(
+                      () => ListView.builder(
+                        controller: _scrollController,
+                        itemCount: remoteServices
+                                    .entries[remoteServices.date.value.yM] ==
+                                null
+                            ? 1
+                            : remoteServices
+                                    .entries[remoteServices.date.value.yM]!
+                                    .length +
+                                1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            balance =
+                                double.parse(remoteServices.openingBalance.value);
+                            return Container(
+                                margin: EdgeInsets.only(bottom:10.h,left:5.w,right:5.w),
+                                decoration:  BoxDecoration(
+                                    color: kAccountStatementTileBGColor,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20))),
+                                width: 350.w,
+                                height: 60.h,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                        top: 20.h,
+                                        left: 10.w,
+                                        child: Text(
+                                          "Opening Balance",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 18.sp,
-                                          color: kAccountStatementForegroundColor),
-                                        ),
-                                      ))
-                                ],
-                              ));
-                        }
-                        if(!scrolledDown)
-                        if (remoteServices
-                            .entries[remoteServices.date.value.yM] !=
-                            null && index == 4) {
-                          _scrollDown();
-                        }
-                        AccountStatementEntry? entry = remoteServices
-                            .entries[remoteServices.date.value.yM]?[index - 1];
-                        if (entry?.status == 1) {
-                          balance += entry?.amount ?? 0;
-                        } else {
-                          balance -= entry?.amount ?? 0;
-                        }
-                        if (entry != null) {
-                          return AccountStatementTile(
-                              entry: entry, balance: entry.balance);
-                        }
-                      },
+                                              color: kAccountStatementForegroundColor),
+                                        )),
+                                    Positioned(
+                                        top: 20.h,
+                                        right: 30.w,
+                                        child: Obx(
+                                          () => Text(
+                                            formatter.format(double.parse(remoteServices.openingBalance.value) ??
+                                                0),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18.sp,
+                                            color: kAccountStatementForegroundColor),
+                                          ),
+                                        ))
+                                  ],
+                                ));
+                          }
+                          if(!scrolledDown)
+                          if (remoteServices
+                              .entries[remoteServices.date.value.yM] !=
+                              null && index == 4) {
+                            _scrollDown();
+                          }
+                          AccountStatementEntry? entry = remoteServices
+                              .entries[remoteServices.date.value.yM]?[index - 1];
+                          if (entry?.status == 1) {
+                            balance += entry?.amount ?? 0;
+                          } else {
+                            balance -= entry?.amount ?? 0;
+                          }
+                          if (entry != null) {
+                            return AccountStatementTile(
+                                entry: entry, balance: entry.balance);
+                          }
+                        },
+                      ),
                     ),
                   ),
                 )

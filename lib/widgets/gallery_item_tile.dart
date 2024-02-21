@@ -17,10 +17,7 @@ class GalleryMediaTile extends StatefulWidget {
 
 class _GalleryMediaTileState extends State<GalleryMediaTile> {
   bool mediaViewed =false;
-  initState(){
 
-    print("media viewed : $mediaViewed");
-  }
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;

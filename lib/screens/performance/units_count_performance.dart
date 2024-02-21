@@ -1,3 +1,4 @@
+import 'package:app/controllers/reports_data_controller.dart';
 import 'package:app/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,23 +27,31 @@ TextStyle titleTextStyle = TextStyle(
 );
 late Size screenSize;
 late List<UnitCount> chartData;
-
+final reportsDataController = Get.find<ReportsDataController>();
+final List reportData = reportsDataController.unitsCounts;
 class _UnitsCountsPerformanceState extends State<UnitsCountsPerformance> {
+  int total =0;
   @override
   Widget build(BuildContext context) {
 
-    print("build UC");
+
+
     screenSize = MediaQuery.of(context).size;
     chartData = [
-      UnitCount("Zircon", 10, kGreen),
-      UnitCount("Emax", 15, Colors.blue),
-      UnitCount("ACRYLIC", 54, Color.fromRGBO(251, 2, 210, 1.0)),
-      UnitCount("NIGHT GUARD", 17, Color.fromRGBO(255, 115, 0, 1)),
-      UnitCount("CUSTOMIZED ABUT", 16, Color.fromRGBO(232, 186, 17, 1.0)),
-      UnitCount("FRAME TITANUIM", 21, Color.fromRGBO(134, 134, 147, 1.0)),
-      UnitCount("BAR TITANIUM", 8, Color.fromRGBO(8, 234, 227, 1.0)),
-      UnitCount("DIGITAL DENTURE", 33, Color.fromRGBO(255, 2, 35, 1.0)),
+      UnitCount("Zircon",reportData[0]["1"] ?? 0, kGreen),
+      UnitCount("Emax", reportData[1]["2"] ?? 0, Colors.blue),
+      UnitCount("ACRYLIC", reportData[2]["3"] ?? 0, Color.fromRGBO(251, 2, 210, 1.0)),
+      UnitCount("NIGHT GUARD", reportData[4]["5"] ?? 0, Color.fromRGBO(255, 115, 0, 1)),
+      UnitCount("CUSTOMIZED ABUT",  reportData[16]["17"], Color.fromRGBO(232, 186, 17, 1.0)),
+      UnitCount("FRAME TITANIUM", reportData[17]["18"] ?? 0, Color.fromRGBO(134, 134, 147, 1.0)),
+      UnitCount("BAR TITANIUM", reportData[18]["19"] ?? 0, Color.fromRGBO(8, 234, 227, 1.0)),
+      UnitCount("DIGITAL DENTURE", reportData[20]["21"] ?? 0, Color.fromRGBO(255, 2, 35, 1.0)),
     ];
+
+    chartData.forEach((element) {
+      total += element.value;
+    });
+
     return SizedBox.expand(
       child: Scaffold(
           backgroundColor: Colors.black,
@@ -104,21 +113,22 @@ class _UnitsCountsPerformanceState extends State<UnitsCountsPerformance> {
           )),
     );
   }
+  SfCircularChart _buildDoughnutCustomizationChart() {
+    return SfCircularChart(
+      annotations: <CircularChartAnnotation>[
+        CircularChartAnnotation(
+            widget: Text(total.toString(),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 35,
+                    fontWeight: FontWeight.w900)))
+      ],
+      series: _getDoughnutCustomizationSeries(),
+    );
+  }
 }
 
-SfCircularChart _buildDoughnutCustomizationChart() {
-  return SfCircularChart(
-    annotations: <CircularChartAnnotation>[
-      CircularChartAnnotation(
-          widget: const Text('116',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w900)))
-    ],
-    series: _getDoughnutCustomizationSeries(),
-  );
-}
+
 
 _buildDescRow(String unitName, int amount, Color iconColor) {
   return Container(

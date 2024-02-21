@@ -30,19 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
   String? appName, packageName, version, buildNumber = "";
   Client? client;
 
-  void updateFCMToken() async{
+  void updateFCMToken() async {
     final fcmToken = await FirebaseMessaging.instance.getToken();
     print("FCM Token: $fcmToken");
     RemoteServicesController.instance.setNotificationToken(fcmToken!);
-    FirebaseMessaging.instance.onTokenRefresh
-        .listen((fcmToken) {
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       RemoteServicesController.instance.setNotificationToken(fcmToken!);
-    })
-        .onError((err) {
+    }).onError((err) {
       print("Error getting fcm token");
     });
   }
-
 
   @override
   void initState() {
@@ -55,23 +52,22 @@ class _HomeScreenState extends State<HomeScreen> {
     checkAuthorization();
   }
 
-
   Future<void> setupInteractedMessage() async {
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
-    print("home screen msg : ${initialMessage?.data}");
     if (initialMessage != null) {
       _handleMessage(initialMessage);
     }
   }
 
-  void _handleMessage(RemoteMessage message) async{
-print("handling notification from home screen");
+  void _handleMessage(RemoteMessage message) async {
     if (message.data["click_action"] == "openCompletedCases") {
       remoteServices.getCompletedCases();
       remoteServices.getInProgressCases();
       Navigator.of(context).push(SwipeablePageRoute(
-        builder: (BuildContext context) => const CasesScreen(tabIndex: 1,),
+        builder: (BuildContext context) => const CasesScreen(
+          tabIndex: 1,
+        ),
       ));
     }
     if (message.data["click_action"] == "OpenAccountStatement") {
@@ -94,36 +90,61 @@ print("handling notification from home screen");
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-
         elevation: 0,
         foregroundColor: kWhite,
         backgroundColor: Colors.transparent,
         actions: <Widget>[
           PopupMenuButton(
-
+              color: Color(0xffa6a6a6),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(20.0),
+                ),
+              ),
               // add icon, by default "3 dot" icon
-              icon: Icon(Icons.account_circle_rounded,color: Colors.white70,),
+              icon: Icon(
+                Icons.account_circle_rounded,
+                color: Colors.white70,
+              ),
               iconSize: 40.w,
               itemBuilder: (context) {
-            return [
-              PopupMenuItem<int>(padding: EdgeInsets.only(left: 30.w,right: 0),value: 0, child:_buildClientName(),),
-              PopupMenuItem<int>(height:2.h,value: 0, child:Container(color: Colors.black54,height: 1.h,)),
-              PopupMenuItem<int>(
-                value: 1,
-                child: Text("Logout",style: TextStyle(fontSize: 22.sp,
-                    color: Colors.black,
-                    fontFamily: 'Quest'),textAlign: TextAlign.start,),
-              ),
-            ];
-          }, onSelected: (value) {
-            if (value == 1) {
-              authController.logout();
-            }
-          }),
+                return [
+                  PopupMenuItem<int>(
+                    padding: EdgeInsets.only(left: 0.w, right: 0),
+                    value: 0,
+                    child: Center(child: _buildClientName()),
+                  ),
+                  PopupMenuItem<int>(
+                      height: 2.h,
+                      value: 0,
+                      child: Container(
+                        color: Colors.black54,
+                        height: 1.h,
+                      )),
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: Center(
+                      child: Text(
+                        "Logout",
+                        style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Colors.black,
+                            fontFamily: 'Quest'),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ];
+              },
+              onSelected: (value) {
+                if (value == 1) {
+                  authController.isLoggedIn.value = false;
+                }
+              }),
         ],
       ),
       body: Container(
@@ -141,7 +162,6 @@ print("handling notification from home screen");
             //     child: _buildClientName()),
             Column(
               children: [
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -157,20 +177,24 @@ print("handling notification from home screen");
                 ),
                 SizedBox(height: 140.h),
                 _buildLogo(),
-                 SizedBox(height: 100.h),
-                 //_buildClientName(),
-                SizedBox(height:50.h),
+                SizedBox(height: 100.h),
+                //_buildClientName(),
+                SizedBox(height: 50.h),
                 _buildCasesBtn(),
                 SizedBox(height: 25.h),
                 Obx(
-                  () => remoteServices.isDoctorAccount.value
+                  () => authController.isDoctorAccount.value
                       ? _buildAccountStatementBtn()
                       : SizedBox(),
                 ),
                 SizedBox(height: 25.h),
-                _buildGalleryBtn(),
+                Obx(() => authController.isDoctorAccount.value
+                    ? _buildGalleryBtn()
+                    : SizedBox()),
                 SizedBox(height: 25.h),
-                _buildPerformanceBtn()
+                Obx(() => authController.isDoctorAccount.value
+                    ? _buildPerformanceBtn()
+                    : SizedBox()),
               ],
             ),
             _buildAccessLevelTag(),
@@ -197,9 +221,9 @@ print("handling notification from home screen");
   Widget _buildClientName() {
     return Obx(
       () => Text(
-        " د. " + (remoteServices.client.value.name ?? ""),
+        " د. " + (authController.client.value.name ?? ""),
         style: TextStyle(
-          fontSize: 25.sp,
+          fontSize: 21.sp,
           color: Colors.black,
           fontFamily: 'Quest',
         ),
@@ -257,14 +281,13 @@ print("handling notification from home screen");
 
   Widget _buildGalleryBtn() {
     return Container(
-      width:250.w,
+      width: 250.w,
       height: 45.h,
-      child: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            right: 0,
-            child: TextButton(
+      child: Stack(children: [
+        Positioned(
+          top: 0,
+          right: 0,
+          child: TextButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(kGreen),
                 foregroundColor: MaterialStateProperty.all(kWhite),
@@ -285,15 +308,18 @@ print("handling notification from home screen");
                 "GALLERY",
                 style: TextStyle(fontSize: 20.sp, fontFamily: fontFamily),
               )),
-          ),
-          Obx(
-            ()=> remoteServices.isAllMediaViewed.value ? SizedBox():Positioned(
-                top: 0,
-                right: 0,
-                child: Image.asset(
-                  "assets/images/new_badge_circle.png",width: 35.w,
-                )),
-          )
+        ),
+        Obx(
+          () => remoteServices.isAllMediaViewed.value
+              ? SizedBox()
+              : Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Image.asset(
+                    "assets/images/new_badge_circle.png",
+                    width: 35.w,
+                  )),
+        )
       ]),
     );
   }
@@ -304,7 +330,7 @@ print("handling notification from home screen");
         left: 15.w,
         child: Obx(
           () => Text(
-            remoteServices.isDoctorAccount.value
+            authController.isDoctorAccount.value
                 ? "Doctor Account"
                 : "Clinic Account",
             style: TextStyle(color: kGrey, fontFamily: fontFamily),
@@ -322,32 +348,32 @@ print("handling notification from home screen");
       ),
     );
   }
-  Widget _buildPerformanceBtn(){
-    return Container(
-      width:250.w,
-      height: 45.h,
-      child:  TextButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(kGreen),
-                  foregroundColor: MaterialStateProperty.all(kWhite),
-                  fixedSize: MaterialStateProperty.all(Size(250.w, 45.h)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          ))),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(SwipeablePageRoute(
-                    builder: (BuildContext context) =>  PerformanceLoadingScreen(),
-                  ));
-                },
-                child: Text(
-                  "MY PERFORMANCE",
-                  style: TextStyle(fontSize: 20.sp, fontFamily: fontFamily),
-                )),
 
+  Widget _buildPerformanceBtn() {
+    return Container(
+      width: 250.w,
+      height: 45.h,
+      child: TextButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(kGreen),
+            foregroundColor: MaterialStateProperty.all(kWhite),
+            fixedSize: MaterialStateProperty.all(Size(250.w, 45.h)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0),
+            ))),
+          ),
+          onPressed: () {
+            Navigator.of(context).push(SwipeablePageRoute(
+              builder: (BuildContext context) => PerformanceLoadingScreen(),
+            ));
+          },
+          child: Text(
+            "MY PERFORMANCE",
+            style: TextStyle(fontSize: 20.sp, fontFamily: fontFamily),
+          )),
     );
   }
 }

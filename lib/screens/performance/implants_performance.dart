@@ -1,7 +1,9 @@
+import 'package:app/controllers/reports_data_controller.dart';
 import 'package:app/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,11 +19,13 @@ late List<_ChartData> data;
 late TooltipBehavior _tooltip;
 
 class _ImplantsPerformanceState extends State<ImplantsPerformance> {
+  final reportsDataController = Get.find<ReportsDataController>();
+  List reportData = [];
   Color tiBaseColor = kGreen;
   Color customColor = Color.fromRGBO(251, 2, 210, 1.0);
   Color multiColor = Colors.indigo;
   Color cementColor = Colors.amber;
-  double maxValue =0;
+  int maxValue =0;
   late Size screenSize;
   TextStyle titleTextStyle = TextStyle(
     color: Colors.black,
@@ -35,23 +39,28 @@ class _ImplantsPerformanceState extends State<ImplantsPerformance> {
   );
   @override
   void initState() {
-    data = [
-      _ChartData('Ti Base', 10, tiBaseColor, "12"),
-      _ChartData('Custom', 30, customColor, "15"),
-      _ChartData('Multi Unit', 20, multiColor, "30"),
-      _ChartData('Cement', 15, cementColor, "6"),
-    ];
-
-    data.forEach((element) {
-      if(element.y > maxValue)
-        maxValue = element.y;
-    });
     _tooltip = TooltipBehavior(enable: true);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    reportData = reportsDataController.implantsCounts;
+    // reportData[0]["1"]=0;
+    // reportData[1]["2"]=25;
+    // reportData[2]["3"]=50;
+    // reportData[3]["4"] =10;
+    data = [
+      _ChartData('Ti Base', reportData[0]["1"], tiBaseColor, reportData[0]["1"].toString()),
+      _ChartData('Custom', reportData[1]["2"], customColor, reportData[1]["2"].toString()),
+      _ChartData('Multi Unit', reportData[2]["3"], multiColor,reportData[2]["3"].toString()),
+      _ChartData('Cement', reportData[3]["4"], cementColor,reportData[3]["4"].toString()),
+    ];
+
+    data.forEach((element) {
+      if(element.y > maxValue)
+        maxValue = element.y;
+    });
 
     screenSize = MediaQuery.of(context).size;
 
@@ -103,15 +112,15 @@ class _ImplantsPerformanceState extends State<ImplantsPerformance> {
                 Row(
                   mainAxisAlignment:MainAxisAlignment.center,
                   children: [
-                    _buildDescBox("Ti Base",12,tiBaseColor,"assets/icons/tibase.svg"),
-                    _buildDescBox("Custom",15,customColor,"assets/icons/custom.svg"),
+                    _buildDescBox(data[0].x,data[0].y,tiBaseColor,"assets/icons/tibase.svg"),
+                    _buildDescBox(data[1].x,data[1].y,customColor,"assets/icons/custom.svg"),
                   ],
                 ),
                 Row(
                   mainAxisAlignment:MainAxisAlignment.center,
                   children: [
-                    _buildDescBox("Multi-Unit",30,multiColor,"assets/icons/multi-unit.svg"),
-                    _buildDescBox("Cement",6,cementColor,"assets/icons/cement.svg"),
+                    _buildDescBox(data[2].x,data[2].y,multiColor,"assets/icons/multi-unit.svg"),
+                    _buildDescBox(data[3].x,data[3].y,cementColor,"assets/icons/cement.svg"),
                   ],
                 ),
               ]),
@@ -236,7 +245,7 @@ class _ChartData {
   _ChartData(this.x, this.y, this.color, this.label);
 
   final String x;
-  final double y;
+  final int y;
   final Color color;
   final String label;
 }

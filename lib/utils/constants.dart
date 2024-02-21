@@ -26,6 +26,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 //String ipAddress = "http://10.0.2.2:80";
 String ipAddress = "http://161.35.46.18:80";
 
+String loginAddress = "$ipAddress/api/login";
 String clientInfoAddress = "$ipAddress/api/client-info";
 String openingBalanceAddress = "$ipAddress/api/opening-balance";
 String accountStatementAddress = "$ipAddress/api/statement";
@@ -38,4 +39,9 @@ String checkIfPhoneExistsAddress = "$ipAddress/api/check-if-phone-exists";
 String getGalleryMediaAddress = "$ipAddress/api/get-gallery-items";
 String setNotificationTokenAddress = "$ipAddress/api/set-notification-token";
 String removeTokenAddress = "$ipAddress/api/remove-token";
-
+String registerLoginAddress = "$ipAddress/api/register-login-time";
+// Reports Addresses
+String getUnitCountsReportAddress = "$ipAddress/api/num-of-units-report";
+String getJobTypesReportAddress = "$ipAddress/api/job-types-report";
+String getQCReportAddress = "$ipAddress/api/QC-report";
+String getImplantsReportAddress = "$ipAddress/api/implants-report";

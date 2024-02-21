@@ -1,3 +1,4 @@
+import 'package:app/utils/local_auth_service.dart';
 import 'package:app/utils/storage_service.dart';
 import 'package:app/widgets/gallery_item_tile.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   @override
   void initState() {
+    checkAuthorization();
     super.initState();
   }
 

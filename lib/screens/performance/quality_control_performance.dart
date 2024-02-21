@@ -1,7 +1,9 @@
+import 'package:app/controllers/reports_data_controller.dart';
 import 'package:app/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class QualityControlPerformance extends StatefulWidget {
@@ -11,10 +13,19 @@ class QualityControlPerformance extends StatefulWidget {
   State<QualityControlPerformance> createState() =>
       _QualityControlPerformanceState();
 }
-
+final reportsDataController = Get.find<ReportsDataController>();
 class _QualityControlPerformanceState extends State<QualityControlPerformance> {
   @override
   Widget build(BuildContext context) {
+
+    int successfulUnits = reportsDataController.QCCounts[0]-reportsDataController.QCCounts[1];
+    int repeatedUnits = reportsDataController.QCCounts[1];
+    int percentage = 0;
+    if(successfulUnits+repeatedUnits != 0)
+    percentage = (successfulUnits/(successfulUnits+repeatedUnits)*100).toInt();
+
+
+
     var mediaQuery = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white30,
@@ -48,10 +59,10 @@ class _QualityControlPerformanceState extends State<QualityControlPerformance> {
         canScaleToFit: true,
         pointers: <GaugePointer>[
 
-          RangePointer(value: 81.3, width: 0.2,
+          RangePointer(value: percentage.toDouble(), width: 0.2,
             color: Colors.green,
             sizeUnit: GaugeSizeUnit.factor
-        ),NeedlePointer(value: 81.3,)
+        ),NeedlePointer(value: percentage.toDouble(),)
         ],
         axisLineStyle: AxisLineStyle(
           thickness: 0.2,
@@ -59,7 +70,7 @@ class _QualityControlPerformanceState extends State<QualityControlPerformance> {
          color: Colors.red),
       )]),
       ),
-      Text("81%",style: TextStyle(fontSize: 30.sp,fontWeight: FontWeight.w700,color: kGreen),),
+      Text(percentage.toString() +"%",style: TextStyle(fontSize: 30.sp,fontWeight: FontWeight.w700,color: kGreen),),
       SizedBox(height: 25.h,),
       Expanded(
         child: Column(
@@ -93,8 +104,8 @@ class _QualityControlPerformanceState extends State<QualityControlPerformance> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("61 ",style: TextStyle(color: Colors.green,fontSize: 27.sp,fontWeight: FontWeight.w700),),
-                          Text("UNITS",style: TextStyle(color: Colors.black54,fontSize: 20.sp),),
+                          Text(successfulUnits.toString(),style: TextStyle(color: Colors.green,fontSize: 27.sp,fontWeight: FontWeight.w700),),
+                          Text(" UNITS",style: TextStyle(color: Colors.black54,fontSize: 20.sp),),
                         ],
                       )
                     ],
@@ -127,8 +138,8 @@ class _QualityControlPerformanceState extends State<QualityControlPerformance> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("14 ",style: TextStyle(color: Colors.red,fontSize: 27.sp,fontWeight: FontWeight.w700),),
-                          Text("UNITS",style: TextStyle(color: Colors.black54,fontSize: 20.sp),),
+                          Text(repeatedUnits.toString(),style: TextStyle(color: Colors.red,fontSize: 27.sp,fontWeight: FontWeight.w700),),
+                          Text(" UNITS",style: TextStyle(color: Colors.black54,fontSize: 20.sp),),
                         ],
                       )
                     ],

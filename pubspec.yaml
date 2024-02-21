@@ -67,7 +67,10 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   loading_animation_widget: ^1.2.0+4
   simple_animations: 3.0.0
+  flutter_keyboard_visibility: ^6.0.0
   page_transition: 2.1.0
+  local_auth: ^2.1.8
+  device_info_plus: ^9.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

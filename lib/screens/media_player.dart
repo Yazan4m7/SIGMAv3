@@ -105,7 +105,6 @@ class _MediaPlayerState extends State<MediaPlayer> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop:() async {
-        print("on will pop inner");
         _chewieController.exitFullScreen();
         Navigator.pop(context);
         return Future.value(true);
@@ -125,7 +124,6 @@ class _MediaPlayerState extends State<MediaPlayer> {
                           .videoPlayerController.value.isInitialized
                       ? WillPopScope(
                     onWillPop:() async {
-                      print("on will pop inner2");
                       Navigator.pop(context);
                       Navigator.pop(context);
                       return Future.value(true);

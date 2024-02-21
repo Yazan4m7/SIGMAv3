@@ -57,7 +57,6 @@ class _ChewieDemoState extends State<ChewieDemo> {
     _videoPlayerController1.addListener(() {
       if (_videoPlayerController1.value.position ==
           _videoPlayerController1.value.duration) {
-        print('video Ended');
       }
     });
   }

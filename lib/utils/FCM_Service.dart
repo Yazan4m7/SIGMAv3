@@ -38,8 +38,7 @@ import 'constants.dart';
         buttonText= "Completed Cases";
       else
         buttonText= "Account Statement";
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+
       if (navigatorKey.currentContext != null) {
         showDialog(context: navigatorKey.currentContext!,
             builder: (BuildContext context){
@@ -57,11 +56,10 @@ import 'constants.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-     print("background messaging handler running .. message data : ${message.data}");
      playSound();
 }
 void _handleMessage(RemoteMessage message) async {
-     print("handling from FCM service");
+
   if (message.data["click_action"] == "openCompletedCases") {
     remoteServices.getCompletedCases();
     remoteServices.getInProgressCases();

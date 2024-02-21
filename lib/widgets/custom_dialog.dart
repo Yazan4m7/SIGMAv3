@@ -12,8 +12,9 @@ import 'package:audioplayers/audioplayers.dart';
 class CustomDialogBox extends StatefulWidget {
   final String title, descriptions, text;
   final bool inBox;
+  final bool playSound;
   const CustomDialogBox(
-      {required this.title, required this.descriptions, required this.text, required this.inBox})
+      {required this.title, required this.descriptions, required this.text, required this.inBox,this.playSound = true})
       : super();
 
   @override
@@ -23,6 +24,7 @@ class CustomDialogBox extends StatefulWidget {
 class _CustomDialogBoxState extends State<CustomDialogBox> {
   @override
   void initState() {
+    if(widget.playSound)
     playSound();
     super.initState();
   }
@@ -99,7 +101,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                         "Close",
                         style: TextStyle(fontSize: 15.sp),
                       )),
-                  TextButton(
+                  widget.title !="ERROR" ? TextButton(
                       onPressed: () {
                         if (widget.text == "Completed Cases") {
                           Navigator.of(navigatorKey.currentContext!).pop();
@@ -130,7 +132,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
                       child: Text(
                         "View",
                         style: TextStyle(fontSize: 15.sp),
-                      ))
+                      )):SizedBox()
                 ],
               )
             ],

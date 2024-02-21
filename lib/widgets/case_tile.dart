@@ -22,8 +22,6 @@ class CaseTile extends StatelessWidget {
     DateTime now = DateTime.now();
     Duration hoursToCompleteCase = deliveryTime.difference(createdAt);
     Duration timeElapsed = now.difference(createdAt);
-    print(
-        "${caseItem.patientName} To complete cae : ${hoursToCompleteCase.inMinutes / 60} time elapsed : ${timeElapsed.inMinutes / 60}");
     return ((timeElapsed.inHours) / (hoursToCompleteCase.inHours));
   }
 
@@ -54,23 +52,24 @@ class CaseTile extends StatelessWidget {
     if(isCompleted){
      percentage = percentageCompleted();
      progressBarWidth = 353.w * percentage;
-    print("progressBarWidth: $progressBarWidth");
+
     }
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(60),color: Colors.transparent
         ),
         padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 10.w),
+        margin: EdgeInsets.only(bottom: 10.h,left:5.w,right:5.w),
         width: 200.w,
         height: 65.h,
         child: Container(
           height: 100.h,
           decoration: BoxDecoration(
               color: isCompleted ? kCasesTileBGColor : kGreen.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(20),
               border:
-                  Border.all(color: isCompleted ? kBlue : kGreen, width: 3.w)),
+                  Border.all(color: isCompleted ? kBlue : kGreen, width: 0.w)),
           child: Stack(
             children: [
 
@@ -86,10 +85,10 @@ class CaseTile extends StatelessWidget {
                             ),
                         child: ClipRRect(
                           borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                              const BorderRadius.only(topLeft: Radius.circular(20),bottomLeft: Radius.circular(20),topRight: Radius.circular(20),bottomRight: Radius.circular(20)),
                           child: LinearPercentIndicator(
                             padding: EdgeInsets.zero,
-                            width: 353.w,
+                            width: 345.w,
                             animation: true,
                             lineHeight: 58.w,
                             animationDuration: 1500,
@@ -112,11 +111,11 @@ class CaseTile extends StatelessWidget {
                   child: Shimmer.fromColors(
                       child: ClipRRect(
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(10)),
+                        const BorderRadius.only(topLeft:Radius.circular(20),bottomLeft:Radius.circular(20) ),
                         child: Container(
-                          color:Colors.red,
+                          color:Colors.blue,
                           width: progressBarWidth <0 ? 343.w :progressBarWidth,
-                          height: 100.h,
+                          height: 60.h,
 
                         ),),
                       baseColor: Colors.transparent,
@@ -216,7 +215,7 @@ class CaseTile extends StatelessWidget {
                             print('Error: ${snapshot.error}');
                             return Text('Error: ${snapshot.error}');
                           } else {
-                            print('Result: ${snapshot.data}');
+
                             return Column(
                               children: [
                                 SizedBox(

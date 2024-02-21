@@ -12,19 +12,17 @@ final authController = Get.find<AuthController>();
 void checkAuthorization() async{
   bool authorized = true;
   String reasonUnAuthorized ="";
-  print("Check Auth: ${authController.phoneNumber}");
   var response =await http.post(Uri.parse(clientInfoAddress),body: {
-    'phoneNum' : encrypt(authController.phoneNumber)
+    'phoneNum' : encrypt(authController.client.value.phone!)
   });
-  print(getBool("accountType"));
-  print("doc id  ${getInt("doctorId")}");
+
   if(response.statusCode == 403) {
     authorized = false;
     reasonUnAuthorized = "Number not found";
   }
   else {
     authorized = sessionTimedOut();
-    reasonUnAuthorized = "15 days passed";
+    reasonUnAuthorized = "24 hours passed";
   }
   if(!authorized) {
     print("Authorization failed,$reasonUnAuthorized, Logging out..");
@@ -36,8 +34,8 @@ void checkAuthorization() async{
         authController.removeNotificationToken(0);
     }
     authController.logout();
-    authController.welcomeMsg.value = "Number used is no longer associated with an account, contact SIGMA.";
-    authController.welcomeMsgColor = Colors.red;
+    authController.errorMsg.value = "Number used is no longer associated with an account, contact SIGMA.";
+    authController.errorMsgColor = Colors.red;
     Get.clearRouteTree();
     Get.offAll(()=>LoginScreen());
   }
@@ -45,12 +43,12 @@ void checkAuthorization() async{
 }
 bool sessionTimedOut(){
   String? firstLoginTime = getString("loginTime");
-  print("loginTime $firstLoginTime");
   if (firstLoginTime == null) return true;
-  DateTime date =  DateFormat("yMd").parse(firstLoginTime);
-  int daysPassed = date.difference(DateTime.now()).inDays;
-  print("logged in $daysPassed days ago");
-  if (daysPassed > 15)
+
+  DateTime loginDate =  DateFormat("yyyy-MM-dd hh:mm a").parse(firstLoginTime);
+  DateTime now = DateFormat("yyyy-MM-dd hh:mm").parse(DateTime.now().toString());
+  Duration minutesPassed = now.difference(loginDate);
+  if (minutesPassed.inHours > 24)
     return false;
   else
     return true;

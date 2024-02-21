@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:app/controllers/reports_data_controller.dart';
 import 'package:app/models/galleryMedia.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app/utils/encrypt.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jiffy/jiffy.dart';
 import '../models/AccountStatementEntry.dart';
@@ -17,10 +22,10 @@ import 'package:flutter/foundation.dart';
 class RemoteServicesController extends GetxController{
   static RemoteServicesController get instance => Get.find();
   final authController = Get.find<AuthController>();
+  //final reportsController =Get.find<ReportsDataController>();
 
-  Rx<Client> client = Client().obs;
-  Rx<bool> isDoctorAccount= false.obs;
-  Rx<String> openingBalance = "".obs;
+
+  Rx<String> openingBalance = "0".obs;
   Rx<Jiffy> date = Jiffy.now().obs;
   Rx<String> currentBalance = "".obs;
   RxList waitingCases = [].obs ;
@@ -33,7 +38,7 @@ class RemoteServicesController extends GetxController{
   void onReady() async{
     super.onReady();
   }
-  void _fetchData() async{
+  void fetchData() async{
     await getOpeningBalance();
     getStatement();
     getInProgressCases();
@@ -41,34 +46,14 @@ class RemoteServicesController extends GetxController{
     getCurrentBalance();
     getEmployees();
   }
-  Future<String> getClient() async{
-    print("get client");
-    var response =await http.post(Uri.parse(clientInfoAddress),body: {'phoneNum' : encrypt(authController.phoneNumber)
-    });
-    if(response.statusCode == 403) {
-      print("account not found, logging out..");
-      authController.logout();
-      authController.welcomeMsg.value = "Number entered is not associated with an account, contact SIGMA.";
-      authController.welcomeMsgColor = Colors.red;
-      return "null";
-      }
-    client.value = Client.fromJson(jsonDecode(response.body));
-    print("client info set.");
-    _fetchData();
-    setAccessLevel();
-    setData("doctorId", client.value.id);
-    return "null";
+  void _fetchReportsData() async{
+    //reportsController.fetchReportsData();
   }
-  void setAccessLevel(){
-    String currentPhoneNum = (authController.phoneNumber.substring(authController.phoneNumber.length-8));
-    if (client.value.phone!.contains(currentPhoneNum))
-      isDoctorAccount.value = true;
-    print("Doctor Account : ${isDoctorAccount.value}");
-    setData("accountType",isDoctorAccount.value);
-  }
+
+
   Future<void> getOpeningBalance() async {
     var response = await http.post(Uri.parse(openingBalanceAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber),
+        body: {'phoneNum': encrypt(authController.client.value.phone!),
           'month' : "${date.value.year}-${date.value.month}"});
     // var response = await http.post(Uri.parse(openingBalanceAddress),
     //     body: {'phoneNum': encrypt(authController.phoneNumber),
@@ -78,15 +63,13 @@ class RemoteServicesController extends GetxController{
   Future<void> getStatement() async {
     if (entries[date.value.yM] != null) return;
     var response = await http.post(Uri.parse(accountStatementAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber),
+        body: {'phoneNum': encrypt(authController.client.value.phone!),
           'month' : "${date.value.year}-${date.value.month}"});
 
 
       var jsons = jsonDecode(response.body);
     if(kDebugMode) {
-      print(encrypt(authController.phoneNumber));
-      print(jsonDecode(response.body));
-      print(jsons.runtimeType);
+      print(encrypt(authController.client.value.phone!));
     }
     if(jsons is Map)
       jsons = jsons.values;
@@ -113,7 +96,7 @@ class RemoteServicesController extends GetxController{
   Future<List<job>> getJobs(String caseId) async{
     List<job> jobs = [];
     var response = await http.post(Uri.parse(getJobsAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber),
+        body: {'phoneNum': encrypt(authController.client.value.phone!),
           'month' : "${date.value.year}-${date.value.month}",
         'case_id' : caseId});
 
@@ -126,7 +109,7 @@ class RemoteServicesController extends GetxController{
   void getInProgressCases() async{
     List<Case> casesList = [];
     var response = await http.post(Uri.parse(getInProgressCasesAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber)
+        body: {'phoneNum': encrypt(authController.client.value.phone!)
           });
 
     List jsons = jsonDecode(response.body);
@@ -138,7 +121,7 @@ class RemoteServicesController extends GetxController{
   void getCompletedCases() async{
     List<Case> casesList = [];
     var response = await http.post(Uri.parse(getCompletedCasesAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber)
+        body: {'phoneNum': encrypt(authController.client.value.phone!)
         });
 
     List jsons = jsonDecode(response.body);
@@ -161,13 +144,13 @@ class RemoteServicesController extends GetxController{
   }
   void getCurrentBalance() async{
     var response = await http.post(Uri.parse(getCurrentBalanceAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber)
+        body: {'phoneNum': encrypt(authController.client.value.phone!)
         });
     currentBalance.value = response.body;
   }
   void getEmployees() async{
     var response = await http.post(Uri.parse(getEmployeesAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber)
+        body: {'phoneNum': encrypt(authController.client.value.phone!)
         });
     List jsons = jsonDecode(response.body);
     for (var element in jsons) {
@@ -177,7 +160,7 @@ class RemoteServicesController extends GetxController{
   }
   Future<void> getGalleryItems() async {
     var response = await http.post(Uri.parse(getGalleryMediaAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber)});
+        body: {'phoneNum': encrypt(authController.client.value.phone!)});
     List jsons = jsonDecode(response.body);
     for (var element in jsons) {
       GalleryMedia media = GalleryMedia.fromJson(element);
@@ -188,8 +171,32 @@ class RemoteServicesController extends GetxController{
   }
   void setNotificationToken(String token) async{
         var response =await http.post(Uri.parse(setNotificationTokenAddress),
-        body: {'phoneNum': encrypt(authController.phoneNumber),
+        body: {'phoneNum': encrypt(authController.client.value.phone!),
         "token":token});
-        print("FCM Token updated, result : ${response.body}");
+  }
+  void registerLogin() async {
+    String device ="N/A";
+    if (Platform.isAndroid) {
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      var release = androidInfo.version.release;
+      var manufacturer = androidInfo.manufacturer;
+      var model = androidInfo.model;
+      device = "$manufacturer $model - $release";
+      // Android 9 (SDK 28), Xiaomi Redmi Note 7
+    }
+
+    if (Platform.isIOS) {
+      var iosInfo = await DeviceInfoPlugin().iosInfo;
+      var systemName = iosInfo.systemName;
+      var version = iosInfo.systemVersion;
+      var name = iosInfo.name;
+      var model = iosInfo.model;
+      print('$systemName $version, $name $model');
+      device = "$name $model - $systemName $version";
+    }
+    print("device $device");
+     http.post(Uri.parse(registerLoginAddress),
+        body: {'phoneNum': encrypt(authController.client.value.phone!),
+        'device': device});
   }
 }

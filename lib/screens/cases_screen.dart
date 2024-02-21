@@ -38,10 +38,8 @@ class _CasesScreenState extends State<CasesScreen>
       setState(() {
       });
     });
-    print("Tab index received : ${widget.tabIndex}");
     if(widget.tabIndex !=null) {
       _tabController?.animateTo(1);
-      print("animating to ${widget.tabIndex}");
     }
 
     super.initState();
